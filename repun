@@ -185,28 +185,70 @@ def check_tools_version(args):
 def check_contig_in_bam(bam_fn, sorted_contig_list, samtools, allow_none=False):
     if allow_none and bam_fn is None:
         return sorted_contig_list, True
-    bai_process = subprocess_popen(shlex.split("{} idxstats {}".format(samtools, bam_fn)))
+
     contig_with_read_support_set = set()
-    for row_id, row in enumerate(bai_process.stdout):
-        row = row.split('\t')
-        if len(row) != 4:
-            continue
-        contig_name, contig_length, mapped_reads, unmapped_reads = row
-        if contig_name not in sorted_contig_list:
-            continue
-        if int(mapped_reads) > 0:
-            contig_with_read_support_set.add(contig_name)
+    is_cram = bam_fn.lower().endswith('.cram')
+
+    if is_cram:
+        # For CRAM files, samtools idxstats is slow as it reads the whole file.
+        # We fallback to checking the header which is much faster.
+        possible_contigs = set()
+        process = subprocess_popen(shlex.split("{} view -H {}".format(samtools, bam_fn)))
+        for row in process.stdout:
+            if row.startswith('@SQ'):
+                columns = row.rstrip().split('\t')
+                for col in columns:
+                    if col.startswith('SN:'):
+                        contig_name = col[3:]
+                        if contig_name in sorted_contig_list:
+                            possible_contigs.add(contig_name)
+                            contig_with_read_support_set.add(contig_name)
+        process.stdout.close()
+        process.wait()
+
+        # Check for existence of reads using random access (fast for CRAM/BAM with index)
+        # We only need to know if count > 0, so reading one read is enough.
+        # contigs_to_check = [c for c in sorted_contig_list if c in possible_contigs]
+        # for contig_name in contigs_to_check:
+        #      # check if any read exists in the region
+        #      cmd = "{} view - {} {} ".format(samtools, bam_fn, contig_name)
+        #      proc = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        #      # Try to read one byte/line. If we get anything, the contig is not empty.
+        #      has_reads = False
+        #      try:
+        #          if proc.stdout.read(1):
+        #             has_reads = True
+        #      finally:
+        #          proc.kill()
+        #          proc.wait() # avoid zombie processes
+             
+        #      if has_reads:
+        #          contig_with_read_support_set.add(contig_name)
+
+    else:
+        bai_process = subprocess_popen(shlex.split("{} idxstats {}".format(samtools, bam_fn)))
+        for row_id, row in enumerate(bai_process.stdout):
+            row = row.split('\t')
+            if len(row) != 4:
+                continue
+            contig_name, contig_length, mapped_reads, unmapped_reads = row
+            if contig_name not in sorted_contig_list:
+                continue
+            if int(mapped_reads) > 0:
+                contig_with_read_support_set.add(contig_name)
+
     for contig_name in sorted_contig_list:
         if contig_name not in contig_with_read_support_set:
             logging(log_warning(
-                "[WARNING] Contig name {} provided but no mapped reads found in BAM, skip!".format(contig_name)))
+                "[WARNING] Contig name {} provided but no mapped reads found in BAM/CRAM, skip!".format(contig_name)))
+    
     filtered_sorted_contig_list = [item for item in sorted_contig_list if item in contig_with_read_support_set]
 
     found_contig = True
     if len(filtered_sorted_contig_list) == 0:
         found_contig = False
         logging(log_warning(
-            "[WARNING] No mapped reads found in BAM for provided contigs set {}".format(' '.join(sorted_contig_list))))
+            "[WARNING] No mapped reads found in BAM/CRAM for provided contigs set {}".format(' '.join(sorted_contig_list))))
 
     return filtered_sorted_contig_list, found_contig
 
@@ -520,7 +562,7 @@ def check_args(args):
 
 
 def print_args(args):
-    version = '0.1.2'
+    version = '0.1.4'
     logging("")
     logging("[INFO] RU VERSION: {}".format(version))
     logging("[INFO] BAM FILE PATH: {}".format(args.bam_fn))
