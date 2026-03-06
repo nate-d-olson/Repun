@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repun"
+version = "0.1.4"
+description = "Haplotype-aware variant-alignment representation unification tool"
+readme = "README.md"
+license = { file = "LICENSE.md" }
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+repun = "repun:main"
+
+[tool.setuptools]
+py-modules = ["repun"]
+
+[tool.setuptools.packages.find]
+namespaces = true
+where = ["."]
+include = ["src*", "shared*", "metrics*"]
