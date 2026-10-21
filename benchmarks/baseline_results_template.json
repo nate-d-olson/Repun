@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "timestamp": "2025-01-26T00:00:00",
+    "hostname": "hostname",
+    "cpu_count": 64,
+    "total_memory_gb": 256.0,
+    "dataset": "small|medium|large",
+    "platform": "ont|hifi|ilmn",
+    "mode": "germline|somatic"
+  },
+  "bam": {
+    "germline": {
+      "command": "repun --bam ... --platform ont",
+      "exit_code": 0,
+      "runtime_seconds": 0.0,
+      "max_memory_mb": 0.0,
+      "avg_cpu_percent": 0.0,
+      "io_read_mb": 0.0,
+      "step_timings": {
+        "WhatsHap UnPhasing": 0.0,
+        "WhatsHap Phasing": 0.0,
+        "Index VCFs": 0.0,
+        "WhatsHap Haplotagging": 0.0,
+        "Split & Extend BED": 0.0,
+        "Extract Truth": 0.0,
+        "Extract Candidates": 0.0,
+        "Unify Representations": 0.0,
+        "Merge & Sort": 0.0
+      }
+    },
+    "somatic": {
+      "command": "repun --bam ... --platform ont --somatic_mode",
+      "exit_code": 0,
+      "runtime_seconds": 0.0,
+      "max_memory_mb": 0.0,
+      "avg_cpu_percent": 0.0,
+      "io_read_mb": 0.0,
+      "step_timings": {
+        "Split & Extend BED": 0.0,
+        "Calculate AF Distribution": 0.0,
+        "Get Truth Variants": 0.0,
+        "Unify Somatic Representations": 0.0,
+        "Merge & Sort": 0.0
+      }
+    }
+  },
+  "cram": {
+    "germline": {
+      "command": "repun --bam ... --platform ont",
+      "exit_code": 0,
+      "runtime_seconds": 0.0,
+      "max_memory_mb": 0.0,
+      "avg_cpu_percent": 0.0,
+      "io_read_mb": 0.0,
+      "step_timings": {
+        "WhatsHap UnPhasing": 0.0,
+        "WhatsHap Phasing": 0.0,
+        "Index VCFs": 0.0,
+        "WhatsHap Haplotagging": 0.0,
+        "Split & Extend BED": 0.0,
+        "Extract Truth": 0.0,
+        "Extract Candidates": 0.0,
+        "Unify Representations": 0.0,
+        "Merge & Sort": 0.0
+      }
+    },
+    "somatic": {
+      "command": "repun --bam ... --platform ont --somatic_mode",
+      "exit_code": 0,
+      "runtime_seconds": 0.0,
+      "max_memory_mb": 0.0,
+      "avg_cpu_percent": 0.0,
+      "io_read_mb": 0.0,
+      "step_timings": {
+        "Split & Extend BED": 0.0,
+        "Calculate AF Distribution": 0.0,
+        "Get Truth Variants": 0.0,
+        "Unify Somatic Representations": 0.0,
+        "Merge & Sort": 0.0
+      }
+    }
+  },
+  "statistics": {
+    "germline": {
+      "runtime_overhead_percent": 0.0,
+      "memory_overhead_percent": 0.0,
+      "io_overhead_percent": 0.0,
+      "cram_slowdown_factor": 0.0
+    },
+    "somatic": {
+      "runtime_overhead_percent": 0.0,
+      "memory_overhead_percent": 0.0,
+      "io_overhead_percent": 0.0,
+      "cram_slowdown_factor": 0.0
+    }
+  },
+  "notes": "Baseline measurements taken before optimization implementation"
+}

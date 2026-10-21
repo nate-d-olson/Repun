@@ -1,0 +1,20 @@
+# Benchmark output files
+*.json
+*.txt
+*.log
+
+# Test data
+test_data/
+baseline_results/
+optimized_results/
+benchmark_results/
+
+# Temporary files
+*.tmp
+*.temp
+__pycache__/
+*.pyc
+
+# Keep templates
+!baseline_results_template.json
+samtools-1.15.1/**
